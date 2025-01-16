@@ -9,8 +9,8 @@ async function fetchTechNews() {
         const response = await axios.get(NEWS_API_URL);
         return response.data.articles.slice(0, 5); 
     } catch (error) {
-        console.error("Error fetching tech news:", error.message);
-        return [];
+        console.error(`Failed to fetch news: ${error.message}`);
+        channel.send("Unable to fetch news. Please try again later.");
     }
 }
 
