@@ -10,12 +10,23 @@ const db = new sqlite3.Database(dbPath, (err) => {
     }
 });
 
-
 // Create a table for user preferences (if it doesn't exist)
 db.run(
     `CREATE TABLE IF NOT EXISTS preferences (
         userId TEXT PRIMARY KEY,
         topics TEXT
+    )`,
+    (err) => {
+        if (err) console.error("Error creating table:", err.message);
+    }
+);
+
+// Create a table to store server configurations (e.g., channel ID for each server)
+db.run(
+    `CREATE TABLE IF NOT EXISTS server_config (
+        serverId TEXT PRIMARY KEY,
+        channelId TEXT,
+        category TEXT DEFAULT 'technology'
     )`,
     (err) => {
         if (err) console.error("Error creating table:", err.message);
@@ -47,17 +58,6 @@ function getUserPreferences(userId, callback) {
     });
 }
 
-// Create a table to store server configurations (e.g., channel ID for each server)
-db.run(
-    `CREATE TABLE IF NOT EXISTS server_config (
-        serverId TEXT PRIMARY KEY,
-        channelId TEXT
-    )`,
-    (err) => {
-        if (err) console.error("Error creating table:", err.message);
-    }
-);
-
 // Save the channel ID for a specific server
 function saveChannelId(serverId, channelId) {
     const query = `INSERT OR REPLACE INTO server_config (serverId, channelId) VALUES (?, ?)`;
@@ -82,11 +82,6 @@ function getChannelId(serverId, callback) {
         }
     });
 }
-
-// Add column for user preferences in the database (if not already created)
-db.run(`ALTER TABLE server_config ADD COLUMN category TEXT`, (err) => {
-    if (err) console.log("Category column already exists or error:", err.message);
-});
 
 // Save category preference
 function saveCategoryPreference(serverId, category) {
@@ -113,6 +108,16 @@ function getCategoryPreference(serverId, callback) {
     });
 }
 
+// Debugging logs for executed SQL queries
+db.on("trace", (sql) => {
+    console.log("Executing SQL:", sql);
+});
 
-module.exports = { saveChannelId, getChannelId, saveUserPreferences,
-    getUserPreferences, saveCategoryPreference, getCategoryPreference};
+module.exports = {
+    saveChannelId,
+    getChannelId,
+    saveUserPreferences,
+    getUserPreferences,
+    saveCategoryPreference,
+    getCategoryPreference,
+};
