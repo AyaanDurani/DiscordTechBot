@@ -27,8 +27,8 @@ client.once("ready", () => {
 });
 
 client.on("messageCreate", async (message) => {
-    // Ignore bot messages
-    if (message.author.bot) return;
+    // Ignore bot messages or messages without a guild (e.g., DMs)
+    if (message.author.bot || !message.guild) return;
 
     // Command to set the news category
     if (message.content.startsWith("!set-category")) {
