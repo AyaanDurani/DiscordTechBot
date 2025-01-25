@@ -4,7 +4,7 @@ const { getChannelId } = require("./database"); // Import database function to g
 
 // Schedule daily news tasks for all servers
 function scheduleDailyNews(client) {
-    cron.schedule("* 09 * * * ", () => { 
+    cron.schedule("0 15 * * * ", () => { 
         (async () => {
             client.guilds.cache.forEach(async (guild) => {
                 const serverId = guild.id;
